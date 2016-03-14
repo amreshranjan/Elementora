@@ -78,6 +78,10 @@ public class ImageAdapter extends BaseAdapter {
             imageView.setImageResource(R.drawable.others);
             textView.setText(hasmap.get("Non-Transactional") + " SMS Found");
         }
+        if(smsType=="Matched-Transactional") {
+            imageView.setImageResource(R.drawable.transaction);
+            textView.setText(hasmap.get("Matched-Transactional") + " SMS Found");
+        }
 
         return view;
     }

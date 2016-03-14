@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 import ele.helper.FillDataForGrid;
 import ele.helper.FilterSms;
+import ele.helper.Rule;
 import ele.helper.SmsStructure;
 
 /**
@@ -27,7 +28,8 @@ import ele.helper.SmsStructure;
  */
 public class CustomAdapter extends BaseAdapter {
 
-    int listOfCategory=3; /* Use for number of categories for different views*/
+    int listOfCategory=4; /* Use for number of categories for different views*/
+    boolean updateView= false;
     TextView textView, tvNonData;
     GridView gridView;
     Context context;
@@ -38,10 +40,15 @@ public class CustomAdapter extends BaseAdapter {
     ArrayList<SmsStructure> mOlaSmsList, mUberSmsList, mTaxiFSSmsList;
     ArrayAdapter<String> mArrayAdaptor;
     Bundle bundle;
+    public  CustomAdapter()
+    {
 
-    public CustomAdapter(Context context)
+    }
+
+    public CustomAdapter(Context context, boolean updateView)
     {
         this.context=context;
+        this.updateView= updateView;
         mSbiSmsArrayList = new ArrayList<>();
         mIciciSmsArrayList = new ArrayList<>();
         mKotakSmsArrayList = new ArrayList<>();
@@ -53,6 +60,10 @@ public class CustomAdapter extends BaseAdapter {
         mCitiSmsArrayList= new ArrayList<>();
         
         
+    }
+    public void isUpdateView(boolean updateView)
+    {
+        this.updateView= updateView;
     }
 
     @Override
@@ -118,15 +129,18 @@ public class CustomAdapter extends BaseAdapter {
                         for(int i=0; i<mIciciSmsArrayList.size();i++)
                         {
                             String strBody = mIciciSmsArrayList.get(i).getBody();
-                            I_bankSmsList.add(strBody);
-                            if(hashMap.containsKey("ICICI")) {
-                                hashMap.put("ICICI",hashMap.get("ICICI")+1 );
-                            }
-                            else {
-                                hashMap.put("ICICI", 1);
+
+                                I_bankSmsList.add(strBody);
+                                if(hashMap.containsKey("ICICI")) {
+                                    hashMap.put("ICICI",hashMap.get("ICICI")+1 );
+                                }
+                                else {
+                                    hashMap.put("ICICI", 1);
+                                }
                             }
 
-                        }
+
+
 
                     }
 
@@ -326,7 +340,7 @@ public class CustomAdapter extends BaseAdapter {
 
 
                     gridView.setNumColumns(GridView.AUTO_FIT);
-                    gridView.setAdapter(new ImageAdapter(context, "Cab",  hashMap));
+                    gridView.setAdapter(new ImageAdapter(context, "Cab", hashMap));
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -387,6 +401,7 @@ public class CustomAdapter extends BaseAdapter {
 
                     }
                     gridView.setNumColumns(GridView.AUTO_FIT);
+
                     gridView.setAdapter(new ImageAdapter(context, "Non-Transactional",  hashMap));
                     gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -411,8 +426,57 @@ public class CustomAdapter extends BaseAdapter {
                 }
 
                 break;
-        }
+            case 3:
+                view= layoutInflater.inflate(R.layout.home_page,parent,false );
+                textView = (TextView) view.findViewById(R.id.tvTransactional);
+                gridView = (GridView) view.findViewById(R.id.gvTrnsactional);
+                if(updateView)
+                {
+                    textView.setText("Matched Transactional");
+                    nonTransactionalSMS = filterSms.parseMatchTransactionalSms();
+                    if(nonTransactionalSMS.size()>0) {
+                        for(int i=0; i< nonTransactionalSMS.size();i++)
+                        {
+                            String strBody = nonTransactionalSMS.get(i).getBody();
+                            other_SmsList.add(strBody);
+                            if(hashMap.containsKey("Matched-Transactional")) {
+                                hashMap.put("Matched-Transactional",hashMap.get("Matched-Transactional")+1 );
+                            }
+                            else {
+                                hashMap.put("Matched-Transactional", 1);
+                            }
 
+                        }
+                        gridView.setNumColumns(GridView.AUTO_FIT);
+                        gridView.setAdapter(new ImageAdapter(context, "Matched-Transactional",  hashMap));
+                        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent newIntent = new Intent(context, BookMarkViewPager.class);
+
+                                bundle.clear();
+                                bundle.putStringArrayList("SMSLIST", other_SmsList);
+
+
+                                newIntent.putExtras(bundle);
+                                context.startActivity(newIntent);
+                            }
+                        });
+                    }
+
+
+                }
+                else
+                {
+                    gridView.setVisibility(View.GONE);
+                    textView.setVisibility(View.GONE);
+                    tvNonData =(TextView) view.findViewById(R.id.tvNoData);
+                    tvNonData.setVisibility(View.VISIBLE);
+                    tvNonData.setText("***Click on Notifications to add new Structure");
+
+                }
+                break;
+        }
         return view;
     }
 

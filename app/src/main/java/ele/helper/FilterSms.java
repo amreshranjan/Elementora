@@ -13,6 +13,7 @@ public class FilterSms {
     ArrayList<SmsStructure> transactionalSms = new ArrayList<>();
     ArrayList<SmsStructure> NontransactionalSms = new ArrayList<>();
     ArrayList<SmsStructure> cabTravelSms = new ArrayList<>();
+    ArrayList<SmsStructure> MatcheRuleSms = new ArrayList<>();
     SmsRepository smsRepository;
 
     public FilterSms(Context context) {
@@ -133,14 +134,16 @@ public class FilterSms {
         for (int i = 0; i < allSms.size(); i++) {
             SmsStructure eachSms = allSms.get(i);
 
-            if (eachSms.getAddress().contains("ICIC") ||
-                    eachSms.getAddress().contains("HDFC") ||
-                    eachSms.getAddress().contains("Kotak") ||
-                    eachSms.getAddress().contains("SBI") ||
-                    eachSms.getAddress().contains("AXIS") ||
-                    eachSms.getAddress().contains("CITI")) {
-                transactionalSms.add(eachSms);
-            }
+                if (eachSms.getAddress().contains("ICIC") ||
+                        eachSms.getAddress().contains("HDFC") ||
+                        eachSms.getAddress().contains("Kotak") ||
+                        eachSms.getAddress().contains("SBI") ||
+                        eachSms.getAddress().contains("AXIS") ||
+                        eachSms.getAddress().contains("CITI")) {
+                    transactionalSms.add(eachSms);
+                }
+
+
 
             /*Pattern regEx
                     = Pattern.compile("(?:INR|inr|RS|rs)+[\\s]*[0-9+[\\,]*+[0-9]*]+[\\.]*[0-9]+");
@@ -248,23 +251,51 @@ public class FilterSms {
     }
 
     public ArrayList<SmsStructure> parseNonTransactionalSms() {
+
         for (int i = 0; i < allSms.size(); i++) {
             SmsStructure eachSms = allSms.get(i);
 
-            if (!eachSms.getAddress().contains("OLA") ||
-                    !eachSms.getAddress().contains("UBER") ||
-                    !eachSms.getAddress().contains("TAXIFS") ||
-                    !eachSms.getAddress().contains("ICIC") ||
-                    !eachSms.getAddress().contains("HDFC") ||
-                    !eachSms.getAddress().contains("Kotak") ||
-                    !eachSms.getAddress().contains("SBI") ||
-                    !eachSms.getAddress().contains("AXIS") ||
-                    !eachSms.getAddress().contains("CITI")) {
-                NontransactionalSms.add(eachSms);
+                if (!eachSms.getAddress().contains("OLA") &&
+                        !eachSms.getAddress().contains("UBER") &&
+                        !eachSms.getAddress().contains("TAXIFS") &&
+                        !eachSms.getAddress().contains("ICIC") &&
+                        !eachSms.getAddress().contains("HDFC") &&
+                        !eachSms.getAddress().contains("Kotak") &&
+                        !eachSms.getAddress().contains("SBI") &&
+                        !eachSms.getAddress().contains("AXIS") &&
+                        !eachSms.getAddress().contains("CITI")) {
+
+                    NontransactionalSms.add(eachSms);
             }
 
         }
         return NontransactionalSms;
+    }
+
+    public ArrayList<SmsStructure> parseMatchTransactionalSms() {
+        ArrayList<String> listofUnknown= new ArrayList<>();
+        for (int i = 0; i < allSms.size(); i++) {
+            SmsStructure eachSms = allSms.get(i);
+            Rule rule = new Rule(eachSms);
+
+            if (!eachSms.getAddress().contains("OLA") &&
+                    !eachSms.getAddress().contains("UBER") &&
+                    !eachSms.getAddress().contains("TAXIFS") &&
+                    !eachSms.getAddress().contains("ICIC") &&
+                    !eachSms.getAddress().contains("HDFC") &&
+                    !eachSms.getAddress().contains("Kotak") &&
+                    !eachSms.getAddress().contains("SBI") &&
+                    !eachSms.getAddress().contains("AXIS") &&
+                    !eachSms.getAddress().contains("CITI")) {
+                if(rule.getSmsCheck()=="Banking") {
+                    System.out.println("Testing :"+ eachSms.getAddress());
+                    listofUnknown.add(eachSms.getAddress());
+                    MatcheRuleSms.add(eachSms);
+                }
+            }
+
+        }
+        return MatcheRuleSms;
     }
 
 

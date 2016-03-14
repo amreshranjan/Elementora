@@ -44,7 +44,6 @@ public class SmsRepository  {
             smsStructure.setBody(smsInboxCursor.getString(indexBody));
             smsStructure.setSenderID(smsInboxCursor.getString(indexPerson));
 
-
             allSmsList.add(smsStructure);
         } while (smsInboxCursor.moveToNext());
 

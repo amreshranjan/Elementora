@@ -24,6 +24,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".BookMarkViewPager"></activity>
+        <activity android:name=".MatchStructure"
+            android:theme="@style/Theme.UserDialog">
+
+        </activity>
 
         <receiver android:name=".BroadcastSMS" android:exported="true" >
             <intent-filter android:priority="999" >
